@@ -59,30 +59,36 @@ final class Definition
      * Add dependence through the constructor
      * @param string $paramName
      * @param $paramValue
+     * @return $this
      */
     public function parameter(string $paramName, $paramValue)
     {
         $this->parameters[$paramName] = $paramValue;
+        return $this;
     }
 
     /**
      * Add dependence through the property
      * @param string $paramName
      * @param $paramValue
+     * @return $this
      */
     public function property(string $paramName, $paramValue)
     {
         $this->properties[$paramName] = $paramValue;
+        return $this;
     }
 
     /**
      * Add dependence through setter
      * @param string $paramName
      * @param $paramValue
+     * @return $this
      */
     public function setter(string $paramName, $paramValue)
     {
         $this->setters[$paramName] = $paramValue;
+        return $this;
     }
 
     /**
