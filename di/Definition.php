@@ -130,8 +130,6 @@ final class Definition
                 }
 
             }
-        } else {
-            throw new Exception(sprintf('Constructor for class %s not found', $this->className));
         }
 
         $instance = $reflection->newInstanceArgs($parameters);
