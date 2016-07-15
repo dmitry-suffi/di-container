@@ -153,7 +153,7 @@ final class Definition
 
         /** Setters */
         foreach ($this->setters as $name => $value) {
-            $settersName = 'set' . str_replace(' ', '', ucwords(strtolower(implode(' ', explode('-', $name)))));
+            $settersName = 'set' . str_replace(' ', '', ucwords(strtolower(implode(' ', explode('-', str_replace('_', '-', $name))))));
 
             $method = $reflection->getMethod($settersName);
             if ($method) {
@@ -164,9 +164,9 @@ final class Definition
                     throw new Exception(sprintf('%s:%s is not public method', $this->className, $settersName));
                 }
                 if ($method->isStatic()) {
-                    $method->invokeArgs(null, $value);
+                    $method->invokeArgs(null, [$value]);
                 } else {
-                    $method->invokeArgs($instance, $value);
+                    $method->invokeArgs($instance, [$value]);
                 }
             }
 
