@@ -5,29 +5,11 @@ use suffi\di\Definition;
 
 class ContainerTest extends \PHPUnit_Framework_TestCase
 {
-    public function testDependensy()
+
+    protected function initException()
     {
-        $container = new Container();
-
-        $thy = new Thy();
-        $thy->setFoo('foo');
-
-        $container->set('thy', $thy);
-        
-        //$this->assertInstanceOf('Thy', $container->get('thy'));
+        $this->expectException(\suffi\di\Exception::class);
     }
-
-    public function testSingletone()
-    {
-        $container = new Container();
-
-        $name1 = 'Foo';
-        $name2 = 'Bar';
-
-//        $this->assertNull($container->getSingleton($name1));
-//        $this->assertNull($container->getSingleton($name2));
-    }
-
 
     public function testDefinition()
     {
@@ -90,5 +72,53 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($container->has('bar'));
 
     }
+
+    public function testSingleton()
+    {
+        $container = new Container();
+
+        $foo = new Foo();
+        $foo->foo = 'foo';
+
+        $this->assertFalse($container->has('foo'));
+        $this->assertFalse($container->hasSingleton('foo'));
+
+        $container->setSingleton('foo', $foo);
+
+        $this->assertTrue($container->has('foo'));
+        $this->assertTrue($container->hasSingleton('foo'));
+
+        $newFoo = $container->get('foo');
+        $this->assertInstanceOf('Foo', $newFoo);
+        $this->assertEquals($foo, $newFoo);
+    }
+
+    /**
+     * @expectedException PHPUnit_Framework_Error
+     */
+    public function testErrorSingleton()
+    {
+        $container = new Container();
+
+        $foo = new Foo();
+        $foo->foo = 'foo';
+
+        $this->assertFalse($container->has('foo'));
+        $this->assertFalse($container->hasSingleton('foo'));
+
+        $container->setSingleton('foo', $foo);
+
+        $this->assertTrue($container->has('foo'));
+        $this->assertTrue($container->hasSingleton('foo'));
+
+        $newFoo = $container->get('foo');
+        $this->assertInstanceOf('Foo', $newFoo);
+        $this->assertEquals($foo, $newFoo);
+
+        $this->initException();
+        $container->setSingleton('foo', $foo);
+    }
+    
+    
 
 }
