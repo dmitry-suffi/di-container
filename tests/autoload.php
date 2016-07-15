@@ -1,5 +1,9 @@
 <?php
 
+include_once 'fixtures/Foo.php';
+include_once 'fixtures/Bar.php';
+include_once 'fixtures/Thy.php';
+
 spl_autoload_register(function ($class) {
 
     // project-specific namespace prefix
