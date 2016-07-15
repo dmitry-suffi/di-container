@@ -5,18 +5,6 @@ namespace suffi\di;
 /**
  * Class Container
  * @package suffi\di
- * 
- * ```php
- * 
- * $container = new Container();
- * 
- * $container->set($name, $object);
- *
- * $container->get($name);
- *
- * 
- * 
- * ```
  */
 class Container
 {
@@ -112,7 +100,8 @@ class Container
         }
 
         if (isset($this->definitions[$key])) {
-            return $this->definitions[$key]->make();
+            $this->container[$key] = $this->definitions[$key]->make();
+            return $this->container[$key];
         }
 
         return false;

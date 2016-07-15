@@ -119,6 +119,39 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $container->setSingleton('foo', $foo);
     }
     
-    
+    public function testGet()
+    {
+        $container = new Container();
+
+        $foo = new Foo();
+        $foo->foo = 'foo';
+
+        $bar = new Bar('foo', 'bar');
+
+        $thy = new Thy();
+
+        $thy->setFoo('foo');
+        $thy->setBar('bar');
+
+        $container->set('foo', $foo);
+        $container->set('bar', $bar);
+        $container->set('thy', $thy);
+
+        $container->setDefinition('common', 'Common')
+            ->parameter('foo', 'foo')
+            ->property('bar', $bar)
+            ->setter('thy', 'thy');
+
+        $this->assertFalse($container->has('common'));
+
+        /** @var Common $common */
+        $common = $container->get('common');
+
+        $this->assertInstanceOf('Common', $common);
+
+        $this->assertEquals($common->getFoo(), $foo);
+        $this->assertEquals($common->bar, $bar);
+        $this->assertEquals($common->getThy(), $thy);
+    }
 
 }
