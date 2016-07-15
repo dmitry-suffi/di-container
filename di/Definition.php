@@ -2,8 +2,6 @@
 
 namespace suffi\di;
 
-use phpDocumentor\Reflection\Types\Object_;
-
 /**
  * Class Definition
  * @package suffi\di
@@ -13,10 +11,11 @@ use phpDocumentor\Reflection\Types\Object_;
  * $container = new Container();
  *
  * $container->setDefinition('name', $object)
- *      ->parameter($paramName, $paramValue) - Зависимость через конструктор
- *      ->property($paramName, $paramValue) - Зависимость через свойство
- *      ->setter($paramName, $paramValue) - Зависимость через сеттер
  *
+ *      ->parameter($paramName, $paramValue) - Add dependence through the constructor
+ *      ->property($paramName, $paramValue) - Add dependence through the property
+ *      ->setter($paramName, $paramValue) - Add dependence through setter
+ *      ->init($methodName) - Add initialization method
  *
  * ```
  */
@@ -39,6 +38,9 @@ final class Definition
 
     /** @var array */
     protected $setters = [];
+
+    /** @var string initMethod */
+    protected $initMethod = '';
 
     public function __construct(Container $container, string $name, string $className)
     {
@@ -83,6 +85,18 @@ final class Definition
      * Add dependence through setter
      * @param string $paramName
      * @param $paramValue
+     *
+     *      $paramName - name prorerty.
+     *
+     *      Example:
+     *          Prorerty: $foo - setter: setFoo()
+     *
+     *          Prorerty: $_foo - setter: setFoo()
+     *
+     *          Prorerty: $foo-bar - setter: setFooBar()
+     *
+     *          Prorerty: $foo_bar - setter: setFooBar()
+     *
      * @return $this
      */
     public function setter(string $paramName, $paramValue)
@@ -172,7 +186,36 @@ final class Definition
 
         }
 
+        /** Init */
+        if ($this->initMethod) {
+
+            if (!method_exists($instance, $this->initMethod)) {
+                throw new Exception(sprintf('Method %s is not found in class %s', $this->className, $this->initMethod));
+            }
+
+            $method = $reflection->getMethod($this->initMethod);
+
+            if (!$method->isPublic()) {
+                throw new Exception(sprintf('%s:%s is not public method', $this->className, $this->initMethod));
+            }
+
+            if ($method->isStatic()) {
+                $method->invokeArgs(null, []);
+            } else {
+                $method->invokeArgs($instance, []);
+            }
+        }
+
         return $instance;
+    }
+
+    /**
+     * Add initialization method. Method is called after the object and setting properties
+     * @param string $methodName
+     */
+    public function init(string $methodName)
+    {
+        $this->initMethod = $methodName;
     }
 
     protected function resolve(string $className)

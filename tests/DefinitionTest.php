@@ -79,7 +79,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
 
         $def->property('_foo', 'foo');
 
-        $this->expectException(\suffi\di\Exception::class);
+        $this->initException();
         $def->make();
     }
 
@@ -124,7 +124,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
 
         $def->parameter('foo', 'foo');
 
-        $this->expectException(\suffi\di\Exception::class);
+        $this->initException();
         $bar = $def->make();
     }
 
@@ -171,8 +171,83 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
 
         $def->setter('foo-bar', 'foo');
 
-        $this->expectException(\suffi\di\Exception::class);
+        $this->initException();
         $def->make();
     }
 
+    public function testInit()
+    {
+        $container = new Container();
+
+        $def = new Definition($container, 'init', 'Init');
+
+        /** @var Init $init */
+        $init = $def->make();
+
+        $this->assertInstanceOf('Init', $init);
+        $this->assertEquals($init->foo, '');
+        $this->assertEquals($init->bar, '');
+        $this->assertEquals($init->thy, '');
+
+        $def->init('initFoo');
+
+        /** @var Init $init */
+        $init = $def->make();
+
+        $this->assertInstanceOf('Init', $init);
+        $this->assertEquals($init->foo, 'foo');
+        $this->assertEquals($init->bar, '');
+        $this->assertEquals($init->thy, '');
+
+        $def->init('initBar');
+
+        /** @var Init $init */
+        $init = $def->make();
+
+        $this->assertInstanceOf('Init', $init);
+        $this->assertEquals($init->foo, '');
+        $this->assertEquals($init->bar, 'bar');
+        $this->assertEquals($init->thy, '');
+
+        $def->init('initThy');
+
+        /** @var Init $init */
+        $init = $def->make();
+
+        $this->assertInstanceOf('Init', $init);
+        $this->assertEquals($init->foo, '');
+        $this->assertEquals($init->bar, '');
+        $this->assertEquals($init->thy, 'thy');
+
+        $def->init('initAll');
+
+        /** @var Init $init */
+        $init = $def->make();
+
+        $this->assertInstanceOf('Init', $init);
+        $this->assertEquals($init->foo, 'foo');
+        $this->assertEquals($init->bar, 'bar');
+        $this->assertEquals($init->thy, 'thy');
+    }
+
+    /**
+     * @expectedException PHPUnit_Framework_Error
+     */
+    public function testNoExistInit()
+    {
+
+        $container = new Container();
+
+        $def = new Definition($container, 'init', 'Init');
+
+        $def->init('initNoExist');
+
+        $this->initException();
+        $def->make();
+    }
+
+    protected function initException()
+    {
+        $this->expectException(\suffi\di\Exception::class);
+    }
 }
