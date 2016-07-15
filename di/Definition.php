@@ -6,7 +6,7 @@ namespace suffi\di;
  * Class Definition
  * @package suffi\di
  *
- * ```php
+ * Example:
  *
  * $container = new Container();
  *
@@ -17,7 +17,6 @@ namespace suffi\di;
  *      ->setter($paramName, $paramValue) - Add dependence through setter
  *      ->init($methodName) - Add initialization method
  *
- * ```
  */
 final class Definition
 {
@@ -55,6 +54,14 @@ final class Definition
         $this->container = $container;
         $this->name = $name;
         $this->className = $className;
+    }
+
+    /**
+     * @return Container
+     */
+    public function getContainer()
+    {
+        return $this->container;
     }
 
     /**
@@ -125,7 +132,16 @@ final class Definition
             foreach ($constructor->getParameters() as $param) {
                 /** The parameter is specified explicitly */
                 if (isset($this->parameters[$param->getName()])) {
-                    $parameters[] = $this->parameters[$param->getName()];
+                    $paramValue = $this->parameters[$param->getName()];
+
+                    /** If is object type */
+                    if (is_string($paramValue) && $param->hasType() && $param->getClass() != null) {
+                        $parameters[] = $this->resolve($paramValue);
+                    } else {
+
+                        $parameters[] = $paramValue;
+                    }
+
                 } else {
                     /** Default value */
                     if ($param->isDefaultValueAvailable()) {
@@ -184,8 +200,8 @@ final class Definition
                 }
 
                 $param = $parameters[0];
-                if ($param->hasType() && $param->getClass() != null) {
-                    $value = $this->resolve($param->getClass()->name);
+                if (is_string($value) && $param->hasType() && $param->getClass() != null) {
+                    $value = $this->resolve($value);
                 }
 
                 if ($method->isStatic()) {
@@ -199,13 +215,15 @@ final class Definition
 
         /** Init */
         if ($this->initMethod) {
-
             if (!method_exists($instance, $this->initMethod)) {
                 throw new Exception(sprintf('Method %s is not found in class %s', $this->className, $this->initMethod));
             }
 
             $method = $reflection->getMethod($this->initMethod);
 
+            if ($method->isAbstract()) {
+                throw new Exception(sprintf('%s:%s - abstract class method', $this->className, $this->initMethod));
+            }
             if (!$method->isPublic()) {
                 throw new Exception(sprintf('%s:%s is not public method', $this->className, $this->initMethod));
             }
