@@ -5,6 +5,8 @@ class Thy{
     protected $foo = '';
     protected $bar = '';
 
+    protected static $s_foo = '';
+
     public function getFoo()
     {
         return $this->foo;
@@ -21,6 +23,21 @@ class Thy{
     }
 
     public function setBar($bar)
+    {
+        $this->bar = $bar;
+    }
+    
+    public static function getSFoo()
+    {
+        return self::$s_foo;
+    }
+
+    public static function setSFoo($s_foo)
+    {
+        self::$s_foo = $s_foo;
+    }
+
+    private function setFooBar($bar)
     {
         $this->bar = $bar;
     }

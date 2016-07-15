@@ -128,4 +128,51 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
         $bar = $def->make();
     }
 
+    public function testSetters()
+    {
+        $container = new Container();
+
+        $def = new Definition($container, 'thy', 'Thy');
+
+        /** @var Thy $thy */
+        $thy = $def->make();
+
+        $this->assertInstanceOf('Thy', $thy);
+        $this->assertEquals($thy->getFoo(), '');
+        $this->assertEquals($thy->getBar(), '');
+        $this->assertEquals(Thy::getSFoo(), '');
+
+        $def->setter('foo', 'foo')
+            ->setter('bar', 'bar');
+
+        /** @var Thy $thy1 */
+        $thy1 = $def->make();
+
+        $this->assertInstanceOf('Thy', $thy1);
+        $this->assertEquals($thy1->getFoo(), 'foo');
+        $this->assertEquals($thy1->getBar(), 'bar');
+        $this->assertEquals(Thy::getSFoo(), '');
+
+        $def->setter('s_foo', 's_foo');
+
+        $def->make();
+        $this->assertEquals(Thy::getSFoo(), 's_foo');
+    }
+
+    /**
+     * @expectedException PHPUnit_Framework_Error
+     */
+    public function testPrivateSetter()
+    {
+
+        $container = new Container();
+
+        $def = new Definition($container, 'thy', 'Thy');
+
+        $def->setter('foo-bar', 'foo');
+
+        $this->expectException(\suffi\di\Exception::class);
+        $def->make();
+    }
+
 }
