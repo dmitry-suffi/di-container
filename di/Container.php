@@ -20,6 +20,9 @@ namespace suffi\di;
  */
 class Container
 {
+    /**
+     * @var array
+     */
     private $singletones = [];
 
     /**
@@ -27,6 +30,9 @@ class Container
      */
     private $definitions = [];
 
+    /**
+     * @var array
+     */
     private $container = [];
 
     /**
@@ -97,53 +103,89 @@ class Container
      */
     public function get(string $key)
     {
-//        if (isset($this->singletones[$key])) {
-//            return $this->make($this->singletones[$key]);
-//        }
-        return $this->container[$key] ?? false;
+        if (isset($this->singletones[$key])) {
+            return $this->singletones[$key];
+        }
+
+        if (isset($this->container[$key])) {
+            return $this->container[$key];
+        }
+
+        if (isset($this->definitions[$key])) {
+            return $this->definitions[$key]->make();
+        }
+
+        return false;
     }
 
     /**
      * Has instance by key
-     * @param $key
+     * @param string $key
      * @return bool
      */
-    public function has($key)
+    public function has(string $key)
     {
-        return isset($this->container[$key]);
+        return $this->hasSingleton($key) || isset($this->container[$key]);
     }
 
     /**
      * Remove instance by key
-     * @param $key
+     * @param string $key
      */
-    public function remove($key)
+    public function remove(string $key)
     {
+        if ($this->hasSingleton($key)) {
+            $this->removeSingleton($key);
+        }
         unset($this->container[$key]);
     }
 
-    protected function setSingleton($key, $name)
+    /**
+     * Set singleton in container
+     * @param string $key
+     * @param object $instance
+     * @throws Exception
+     */
+    public function setSingleton(string $key, $instance)
     {
+        if ($this->hasSingleton($key)) {
+            throw new Exception($key . ' is singleton!');
+        }
 
+        if (!is_object($instance)) {
+            throw new Exception('Value is not object');
+        }
+
+        $this->singletones[$key] = $instance;
     }
 
     /**
-     * @param $key
-     * @return Object|null
+     * Get singleton by key
+     * @param string $key
+     * @return Object|false
      */
-    public function getSingleton($key)
+    protected function getSingleton(string $key)
     {
-
+        return $this->singletones[$key] ?? false;
     }
 
-    protected function removeSingleton($key)
+    /**
+     * Remove singleton by $key
+     * @param string $key
+     */
+    protected function removeSingleton(string $key)
     {
-
+        unset($this->singletones[$key]);
     }
 
-    public function hasSingleton($key)
+    /**
+     * Has singleton by $key
+     * @param string $key
+     * @return bool
+     */
+    public function hasSingleton(string $key)
     {
-
+        return isset($this->singletones[$key]);
     }
 
     private function make($object)
