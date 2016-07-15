@@ -57,6 +57,14 @@ final class Definition
     }
 
     /**
+     * @return Container
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
      * Add dependence through the constructor
      * @param string $paramName
      * @param $paramValue
@@ -207,13 +215,15 @@ final class Definition
 
         /** Init */
         if ($this->initMethod) {
-
             if (!method_exists($instance, $this->initMethod)) {
                 throw new Exception(sprintf('Method %s is not found in class %s', $this->className, $this->initMethod));
             }
 
             $method = $reflection->getMethod($this->initMethod);
 
+            if ($method->isAbstract()) {
+                throw new Exception(sprintf('%s:%s - abstract class method', $this->className, $this->initMethod));
+            }
             if (!$method->isPublic()) {
                 throw new Exception(sprintf('%s:%s is not public method', $this->className, $this->initMethod));
             }

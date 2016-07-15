@@ -29,7 +29,7 @@ class Container
      * @param string $className
      * @return Definition
      */
-    public function setDefinition(string $name, string $className)
+    public function setDefinition(string $name, string $className): Definition
     {
         if (!isset($this->definitions[$name])) {
             $this->definitions[$name] = new Definition($this, $name, $className);
@@ -123,9 +123,6 @@ class Container
      */
     public function remove(string $key)
     {
-        if ($this->hasSingleton($key)) {
-            $this->removeSingleton($key);
-        }
         unset($this->container[$key]);
     }
 
@@ -177,14 +174,4 @@ class Container
         return isset($this->singletones[$key]);
     }
 
-    private function make($object)
-    {
-        if (is_object($object)) {
-            return $object;
-        } else {
-            $newObject = new $object();
-        }
-    }
-
-    
 }
