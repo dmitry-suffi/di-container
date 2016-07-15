@@ -1,0 +1,19 @@
+{
+    "name": "dmitry-suffi/di",
+    "description": "dependency injection container",
+    "keywords": ["di", "container"],
+    "homepage": "https://github.com/dmitry-suffi/di-container",
+    "type": "project",
+    "license": "BSD-3-Clause",
+    "support": {},
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "5.4.*"
+    },
+    "autoload": {
+        "psr-4": {"suffi\\di\\": ""}
+    }
+}
