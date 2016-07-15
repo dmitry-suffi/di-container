@@ -177,6 +177,17 @@ final class Definition
                 if (!$method->isPublic()) {
                     throw new Exception(sprintf('%s:%s is not public method', $this->className, $settersName));
                 }
+
+                $parameters = $method->getParameters();
+                if (!isset($parameters[0])) {
+                    throw new Exception(sprintf('Method %s has no input parameters', $settersName));
+                }
+
+                $param = $parameters[0];
+                if ($param->hasType() && $param->getClass() != null) {
+                    $value = $this->resolve($param->getClass()->name);
+                }
+
                 if ($method->isStatic()) {
                     $method->invokeArgs(null, [$value]);
                 } else {
@@ -218,10 +229,20 @@ final class Definition
         $this->initMethod = $methodName;
     }
 
+    /**
+     * Create instance for className.
+     * @todo пока только для конструктора и сеттеров, возможно сделать для публичных свойств ?
+     * @param string $className
+     * @return object
+     * @throws Exception
+     */
     protected function resolve(string $className)
     {
-        /** @TODO */
-        return new \stdClass();
+        if (!$this->container->hasDefinition($className)) {
+            throw new Exception(sprintf('Definition for %s is not found', $className));
+        }
+
+        return $this->container->getDefinition($className)->make();
     }
 
 }
