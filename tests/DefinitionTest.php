@@ -83,4 +83,49 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
         $def->make();
     }
 
+    public function testConstructor()
+    {
+        $container = new Container();
+
+        $def = new Definition($container, 'bar', 'Bar');
+
+        $def->parameter('foo', 'foo')
+            ->parameter('bar', 'bar');
+
+        /** @var Bar $bar */
+        $bar = $def->make();
+
+        $this->assertInstanceOf('Bar', $bar);
+        $this->assertEquals($bar->getFoo(), 'foo');
+        $this->assertEquals($bar->getBar(), 'bar');
+        $this->assertEquals($bar->getThy(), 'thy'); //default value
+
+        $def->parameter('foo', 'foo1')
+            ->parameter('bar', 'bar1')
+            ->parameter('thy', 'thy1');
+
+        /** @var Bar $bar */
+        $bar1 = $def->make();
+
+        $this->assertInstanceOf('Bar', $bar1);
+        $this->assertEquals($bar1->getFoo(), 'foo1');
+        $this->assertEquals($bar1->getBar(), 'bar1');
+        $this->assertEquals($bar1->getThy(), 'thy1');
+    }
+
+    /**
+     * @expectedException PHPUnit_Framework_Error
+     */
+    public function testNoSetParameters()
+    {
+        $container = new Container();
+
+        $def = new Definition($container, 'bar', 'Bar');
+
+        $def->parameter('foo', 'foo');
+
+        $this->expectException(\suffi\di\Exception::class);
+        $bar = $def->make();
+    }
+
 }
