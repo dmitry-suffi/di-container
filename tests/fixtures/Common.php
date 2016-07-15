@@ -7,7 +7,7 @@ class Common{
     public $bar = '';
     protected $thy = '';
 
-    public function __construct($foo = '')
+    public function __construct(Foo $foo = null)
     {
         $this->foo = $foo;
     }
@@ -22,7 +22,7 @@ class Common{
         return $this->thy;
     }
 
-    public function setThy($thy)
+    public function setThy(Thy $thy)
     {
         $this->thy = $thy;
     }
