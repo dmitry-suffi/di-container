@@ -23,71 +23,103 @@ class Container
     private $singletones = [];
 
     /**
-     * @var
+     * @var Definition[]
      */
     private $definitions = [];
 
     private $container = [];
 
     /**
-     * @param string $key
-     * @param $name
+     * Set definition
+     * @param string $name
+     * @param string $className
+     * @return Definition
      */
-    public function set(string $key, $name)
+    public function setDefinition(string $name, string $className)
     {
+        if (!isset($this->definitions[$name])) {
+            $this->definitions[$name] = new Definition($this, $name, $className);
+        }
 
+        return $this->definitions[$name];
     }
 
     /**
+     * Get definition by name
+     * @param string $name
+     * @return Definition|false
+     */
+    public function getDefinition(string $name)
+    {
+        return $this->definitions[$name] ?? false;
+    }
+
+    /**
+     * Remove definition by name
+     * @param string $name
+     * @return void
+     */
+    public function removeDefinition(string $name)
+    {
+        unset($this->definitions[$name]);
+    }
+
+    /**
+     * Has definition by name
+     * @param string $name
+     * @return bool
+     */
+    public function hasDefinition(string $name)
+    {
+        return isset($this->definitions[$name]);
+    }
+
+    /**
+     * Set in container
      * @param string $key
-     * @return mixed
+     * @param $instance
+     * @throws Exception
+     */
+    public function set(string $key, $instance)
+    {
+        if (!is_object($instance)) {
+            throw new Exception('Value is not object');
+        }
+
+        /** is not singleton */
+        $this->container[$key] = $instance;
+    }
+
+    /**
+     * Get by key
+     * @param string $key
+     * @return object|false
      */
     public function get(string $key)
     {
-        
-        if (isset($this->singletones[$key])) {
-            return $this->make($this->singletones[$key]);
-        }
+//        if (isset($this->singletones[$key])) {
+//            return $this->make($this->singletones[$key]);
+//        }
+        return $this->container[$key] ?? false;
     }
 
+    /**
+     * Has instance by key
+     * @param $key
+     * @return bool
+     */
     public function has($key)
     {
-
+        return isset($this->container[$key]);
     }
 
-    public function find($key)
-    {
-
-    }
-
+    /**
+     * Remove instance by key
+     * @param $key
+     */
     public function remove($key)
     {
-
-    }
-
-    public function setDefinition($key, $name)
-    {
-
-    }
-
-    public function getDefinition($key)
-    {
-
-    }
-
-    public function removeDefinition($key)
-    {
-
-    }
-
-    public function hasDefinition($key)
-    {
-
-    }
-
-    public function findDefinition($key)
-    {
-
+        unset($this->container[$key]);
     }
 
     protected function setSingleton($key, $name)
