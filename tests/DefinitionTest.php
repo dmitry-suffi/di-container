@@ -3,55 +3,6 @@
 use \suffi\di\Container;
 use \suffi\di\Definition;
 
-/** @TODO Fixtures */
-class Foo{
-
-    public $foo = '';
-    public $bar = '';
-
-}
-
-class Bar{
-
-    protected $foo = '';
-    protected $bar = '';
-
-    public function __construct($foo, $bar)
-    {
-        $this->foo = $foo;
-        $this->bar = $bar;
-    }
-
-
-}
-
-class Thy{
-
-    protected $foo = '';
-    protected $bar = '';
-
-    public function getFoo()
-    {
-        return $this->foo;
-    }
-
-    public function setFoo($foo)
-    {
-        $this->foo = $foo;
-    }
-
-    public function getBar()
-    {
-        return $this->bar;
-    }
-
-    public function setBar($bar)
-    {
-        $this->bar = $bar;
-    }
-
-}
-
 /**
  * Class DefinitionTest
  */
@@ -78,6 +29,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
 
         $foo1 = $def->make();
 
+        $this->assertInstanceOf('Foo', $foo);
         $this->assertInstanceOf('Foo', $foo1);
 
         $this->assertEquals($foo->foo, 'foo');
@@ -85,6 +37,50 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($foo1->foo, 'foo1');
         $this->assertEquals($foo1->bar, 'bar1');
+
+        $def2 = new Definition($container, 'foo', 'Foo');
+        $def2->property('foo', 'foo2');
+
+        $foo2 = $def2->make();
+
+        $this->assertInstanceOf('Foo', $foo);
+        $this->assertInstanceOf('Foo', $foo1);
+        $this->assertInstanceOf('Foo', $foo2);
+
+        $this->assertEquals($foo->foo, 'foo');
+        $this->assertEquals($foo->bar, 'bar');
+
+        $this->assertEquals($foo1->foo, 'foo1');
+        $this->assertEquals($foo1->bar, 'bar1');
+
+        $this->assertEquals($foo2->foo, 'foo2');
+        $this->assertEquals($foo2->bar, '');
+
+        /** Static */
+        $def->property('s_foo', 'foo');
+
+        $this->assertNotEquals(Foo::$s_foo, 'foo');
+        $foo3 = $def->make();
+
+        $this->assertInstanceOf('Foo', $foo3);
+
+        $this->assertEquals(Foo::$s_foo, 'foo');
+    }
+
+    /**
+     * @expectedException PHPUnit_Framework_Error
+     */
+    public function testPrivateProperty()
+    {
+
+        $container = new Container();
+
+        $def = new Definition($container, 'foo', 'Foo');
+
+        $def->property('_foo', 'foo');
+
+        $this->expectException(\suffi\di\Exception::class);
+        $def->make();
     }
 
 }
