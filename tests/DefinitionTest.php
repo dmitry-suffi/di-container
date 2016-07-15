@@ -8,6 +8,12 @@ use \suffi\di\Definition;
  */
 class DefinitionTest extends \PHPUnit_Framework_TestCase
 {
+
+    protected function initException()
+    {
+        $this->expectException(\suffi\di\Exception::class);
+    }
+
     public function testProperties()
     {
         $container = new Container();
@@ -246,8 +252,75 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
         $def->make();
     }
 
-    protected function initException()
+    public function testCommon()
     {
-        $this->expectException(\suffi\di\Exception::class);
+        $container = new Container();
+
+        $def = new Definition($container, 'common', 'Common');
+
+        /** @var Common $common */
+        $common = $def->make();
+
+        $this->assertInstanceOf('Common', $common);
+        $this->assertEquals($common->getFoo(), '');
+        $this->assertEquals($common->bar, '');
+        $this->assertEquals($common->getThy(), '');
+
+        $def->parameter('foo', 'foo');
+
+        $common = $def->make();
+
+        $this->assertInstanceOf('Common', $common);
+        $this->assertEquals($common->getFoo(), 'foo');
+        $this->assertEquals($common->bar, '');
+        $this->assertEquals($common->getThy(), '');
+
+        $def->property('bar', 'bar');
+
+        $common = $def->make();
+
+        $this->assertInstanceOf('Common', $common);
+        $this->assertEquals($common->getFoo(), 'foo');
+        $this->assertEquals($common->bar, 'bar');
+        $this->assertEquals($common->getThy(), '');
+
+        $def->setter('thy', 'thy');
+
+        $common = $def->make();
+
+        $this->assertInstanceOf('Common', $common);
+        $this->assertEquals($common->getFoo(), 'foo');
+        $this->assertEquals($common->bar, 'bar');
+        $this->assertEquals($common->getThy(), 'thy');
+
+        $def->init('initAll');
+
+        $common = $def->make();
+
+        $this->assertInstanceOf('Common', $common);
+        $this->assertEquals($common->getFoo(), 'foo init');
+        $this->assertEquals($common->bar, 'bar init');
+        $this->assertEquals($common->getThy(), 'thy init');
+
+        /** All */
+        $def1 = new Definition($container, 'common', 'Common');
+        $common = $def1->make();
+
+        $this->assertInstanceOf('Common', $common);
+        $this->assertEquals($common->getFoo(), '');
+        $this->assertEquals($common->bar, '');
+        $this->assertEquals($common->getThy(), '');
+
+        $def1->parameter('foo', 'foo')
+            ->property('bar', 'bar')
+            ->setter('thy', 'thy');
+
+        $common = $def1->make();
+
+        $this->assertInstanceOf('Common', $common);
+        $this->assertEquals($common->getFoo(), 'foo');
+        $this->assertEquals($common->bar, 'bar');
+        $this->assertEquals($common->getThy(), 'thy');
     }
+
 }
