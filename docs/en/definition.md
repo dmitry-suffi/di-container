@@ -5,7 +5,7 @@
 
 Class-definition. It contains the definition of the class dependencies and the mechanics of creating a new instance.
 
-### Основные методы:
+### Basic methods:
 
 * ___construct(Container $container, string $name, string $className)_ - Constructor. Options - Container name, class name.
 
@@ -19,7 +19,7 @@ Class-definition. It contains the definition of the class dependencies and the m
 
 * _make()_ - It creates an object and dependency resolution.
 
-### Примечания.
+### Notes.
 
 * setters and initialization methods must be public and abstract.
 
