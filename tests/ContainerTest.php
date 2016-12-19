@@ -195,4 +195,28 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($extContainer->has('common'));
         $this->assertTrue($extContainer->hasDefinition('common'));
     }
+
+    public function testAlias()
+    {
+
+        $container = new Container();
+
+        $foo = new Foo();
+        $foo->foo = 'foo';
+
+        $container->setDefinition('foo', 'Foo');
+
+        $this->assertFalse($container->hasDefinition('bar'));
+
+        $container->setAlias('bar', 'foo');
+        $container->setAlias('thy', 'bar');
+
+        $this->assertTrue($container->hasDefinition('foo'));
+        $this->assertTrue($container->hasDefinition('bar'));
+        $this->assertTrue($container->hasDefinition('thy'));
+
+        $this->assertEquals($container->getDefinition('foo'), $container->getDefinition('bar'));
+        $this->assertEquals($container->getDefinition('foo'), $container->getDefinition('thy'));
+    }
+
 }
