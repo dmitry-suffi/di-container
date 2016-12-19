@@ -74,3 +74,7 @@ $container->get('foo');
 ```
 
 Подробнее о [контейнере](docs/ru/container.md)
+
+### Также
+
+[Трейт](docs/ru/containerTrait.md) для подключения контейнера в класс

@@ -33,7 +33,7 @@ class Container
      * @param $name
      * @param $alias
      */
-    public function setAlias($name, $alias)
+    public function setAlias(string $name, string $alias)
     {
         $this->aliases[$name] = $alias;
     }
@@ -43,7 +43,7 @@ class Container
      * @param $name
      * @return bool|mixed
      */
-    public function getAlias($name)
+    public function getAlias(string $name)
     {
         return $this->aliases[$name] ?? false;
     }
@@ -53,7 +53,7 @@ class Container
      * @param $name
      * @return bool
      */
-    public function hasAlias($name)
+    public function hasAlias(string $name)
     {
         return isset($this->aliases[$name]);
     }
@@ -62,7 +62,7 @@ class Container
      * Remove alias
      * @param $name
      */
-    public function removeAlias($name)
+    public function removeAlias(string $name)
     {
         unset($this->aliases[$name]);
     }
