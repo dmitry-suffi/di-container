@@ -26,3 +26,11 @@
 * _removeDefinition(string $name)_ - Удаление правила.
 
 * _hasDefinition(string $name)_ - Показывает, есть ли в контейнере правило с указанным именем.
+
+* _setAlias(string $name, string $alias)_ - Установка псевдонима.
+
+* _getAlias(string $name)_ - Получение псевдонима.
+
+* _hasAlias(string $name)_ - Проверка на существование псевдонима.
+
+* _removeAlias(string $name)_ - Удаление псевдонима.
