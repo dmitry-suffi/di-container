@@ -153,5 +153,26 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($common->bar, $bar);
         $this->assertEquals($common->getThy(), $thy);
     }
+    
+    public function testImplements()
+    {
+        $c = new class() implements Barable{
+            public $foo = 'Barable'; 
+        };
+
+        $container = new Container();
+
+        $container->set('Barable', $c);
+        $container->setDefinition('foobar', 'FooBar');
+        
+        $this->assertTrue($container->has('Barable'));
+        $this->assertTrue($container->hasDefinition('foobar'));
+
+        $foobar = $container->get('foobar');
+        
+        $this->assertInstanceOf(FooBar::class, $foobar);
+        $this->assertInstanceOf(Barable::class, $foobar->foo);
+
+    }
 
 }
