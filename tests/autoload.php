@@ -5,6 +5,8 @@ include_once 'fixtures/Bar.php';
 include_once 'fixtures/Thy.php';
 include_once 'fixtures/Init.php';
 include_once 'fixtures/Common.php';
+include_once 'fixtures/Barable.php';
+include_once 'fixtures/FooBar.php';
 
 spl_autoload_register(function ($class) {
 

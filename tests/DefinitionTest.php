@@ -71,6 +71,22 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Foo', $foo3);
 
         $this->assertEquals(Foo::$s_foo, 'foo');
+        
+        /** Callable */
+
+        $def = new Definition($container, 'foo', 'Foo');
+
+        $def->property('foo', function() {
+            return 'foo';
+        })
+            ->property('bar', function() {
+                return 'foo';
+            });
+
+        $foo = $def->make();
+        $this->assertEquals($foo->foo, 'foo');
+        $this->assertEquals($foo->bar, 'foo');
+
     }
 
     /**
@@ -115,6 +131,21 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Bar', $bar1);
         $this->assertEquals($bar1->getFoo(), 'foo1');
+        $this->assertEquals($bar1->getBar(), 'bar1');
+        $this->assertEquals($bar1->getThy(), 'thy1');
+
+        /** Callable */
+        $def->parameter('foo', function() {
+            return 'foo1bar1';
+        })
+            ->parameter('bar', 'bar1')
+            ->parameter('thy', 'thy1');
+
+        /** @var Bar $bar */
+        $bar1 = $def->make();
+
+        $this->assertInstanceOf('Bar', $bar1);
+        $this->assertEquals($bar1->getFoo(), 'foo1bar1');
         $this->assertEquals($bar1->getBar(), 'bar1');
         $this->assertEquals($bar1->getThy(), 'thy1');
     }
@@ -163,6 +194,18 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
 
         $def->make();
         $this->assertEquals(Thy::getSFoo(), 's_foo');
+        
+        /** @var Thy $thy1 */
+        $def->setter('foo', 'foo')
+            ->setter('bar', function() {
+                return 'foo1bar1';
+            });
+        
+        $thy2 = $def->make();
+
+        $this->assertInstanceOf('Thy', $thy2);
+        $this->assertEquals($thy2->getFoo(), 'foo');
+        $this->assertEquals($thy2->getBar(), 'foo1bar1');
     }
 
     /**

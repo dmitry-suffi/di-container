@@ -74,3 +74,7 @@ $container->get('foo');
 ```
 
 Read more about [container](docs/en/container.md)
+
+###See also:
+
+[Traits](docs/en/containerTrait.md) to connect the container to the classroom

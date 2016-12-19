@@ -24,6 +24,50 @@ class Container
     private $container = [];
 
     /**
+     * @var array
+     */
+    private $aliases = [];
+
+    /**
+     * Set alias
+     * @param $name
+     * @param $alias
+     */
+    public function setAlias(string $name, string $alias)
+    {
+        $this->aliases[$name] = $alias;
+    }
+
+    /**
+     * Get alias
+     * @param $name
+     * @return bool|mixed
+     */
+    public function getAlias(string $name)
+    {
+        return $this->aliases[$name] ?? false;
+    }
+
+    /**
+     * Has alias
+     * @param $name
+     * @return bool
+     */
+    public function hasAlias(string $name)
+    {
+        return isset($this->aliases[$name]);
+    }
+
+    /**
+     * Remove alias
+     * @param $name
+     */
+    public function removeAlias(string $name)
+    {
+        unset($this->aliases[$name]);
+    }
+
+    /**
      * Set definition
      * @param string $name
      * @param string $className
@@ -45,7 +89,7 @@ class Container
      */
     public function getDefinition(string $name)
     {
-        return $this->definitions[$name] ?? false;
+        return $this->definitions[$name] ?? ($this->hasAlias($name) ? $this->getDefinition($this->getAlias($name)) : false);
     }
 
     /**
@@ -65,7 +109,7 @@ class Container
      */
     public function hasDefinition(string $name)
     {
-        return isset($this->definitions[$name]);
+        return isset($this->definitions[$name]) || ($this->hasAlias($name) && $this->hasDefinition($this->getAlias($name)));
     }
 
     /**
@@ -102,6 +146,10 @@ class Container
         if (isset($this->definitions[$key])) {
             $this->container[$key] = $this->definitions[$key]->make();
             return $this->container[$key];
+        }
+
+        if (isset($this->aliases[$key])) {
+            return $this->get($this->aliases[$key]);
         }
 
         return false;
