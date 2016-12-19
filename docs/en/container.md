@@ -26,3 +26,11 @@ Class for storing objects and their dependencies.
 * _removeDefinition(string $name)_ - Removing rules.
 
 * _hasDefinition(string $name)_ - Indicates whether a container in the rule with the specified name.
+
+* _setAlias(string $name, string $alias)_ - Setting alias.
+
+* _getAlias(string $name)_ - Getting alias.
+
+* _hasAlias(string $name)_ - Check for the existence of an alias.
+
+* _removeAlias(string $name)_ - Deleting an alias.

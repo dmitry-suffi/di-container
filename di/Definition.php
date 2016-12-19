@@ -134,6 +134,10 @@ final class Definition
                 if (isset($this->parameters[$param->getName()])) {
                     $paramValue = $this->parameters[$param->getName()];
 
+                    if (is_callable($paramValue)) {
+                        $paramValue = call_user_func($paramValue);
+                    }
+
                     /** If is object type */
                     if (is_string($paramValue) && $param->hasType() && $param->getClass() != null) {
                         $parameters[] = $this->resolve($paramValue);
@@ -169,6 +173,10 @@ final class Definition
 
             $property = $reflection->getProperty($name);
 
+            if (is_callable($value)) {
+                $value = call_user_func($value);
+            }
+
             if ($property) {
                 if (!$property->isPublic()) {
                     throw new Exception(sprintf('%s Class %s property is not public', $this->className, $name));
@@ -200,6 +208,11 @@ final class Definition
                 }
 
                 $param = $parameters[0];
+
+                if (is_callable($value)) {
+                    $value = call_user_func($value);
+                }
+
                 if (is_string($value) && $param->hasType() && $param->getClass() != null) {
                     $value = $this->resolve($value);
                 }
