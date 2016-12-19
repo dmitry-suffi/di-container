@@ -154,4 +154,45 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($common->getThy(), $thy);
     }
 
+    public function testExtended()
+    {
+        $container = new Container();
+
+        $foo = new Foo();
+        $foo->foo = 'foo';
+
+        $bar = new Bar('foo', 'bar');
+
+        $thy = new Thy();
+
+        $thy->setFoo('foo');
+        $thy->setBar('bar');
+
+        $container->set('foo', $foo);
+        $container->set('bar', $bar);
+        $container->set('thy', $thy);
+
+        $container->setDefinition('common', 'Common')
+            ->parameter('foo', 'foo')
+            ->property('bar', $bar)
+            ->setter('thy', 'thy');
+
+        $this->assertFalse($container->has('common'));
+
+        $extContainer = new \suffi\di\ExtendedContainer();
+
+        $this->assertFalse($extContainer->has('foo'));
+        $this->assertFalse($extContainer->has('bar'));
+        $this->assertFalse($extContainer->has('thy'));
+        $this->assertFalse($extContainer->has('common'));
+        $this->assertFalse($extContainer->hasDefinition('common'));
+
+        $extContainer->setParentsContainer($container);
+
+        $this->assertTrue($extContainer->has('foo'));
+        $this->assertTrue($extContainer->has('bar'));
+        $this->assertTrue($extContainer->has('thy'));
+        $this->assertFalse($extContainer->has('common'));
+        $this->assertTrue($extContainer->hasDefinition('common'));
+    }
 }
