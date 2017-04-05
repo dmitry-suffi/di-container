@@ -162,7 +162,7 @@ class Container
      */
     public function has(string $key)
     {
-        return $this->hasSingleton($key) || isset($this->container[$key]);
+        return $this->hasSingleton($key) || isset($this->container[$key]) || ($this->hasAlias($key) && $this->has($this->getAlias($key)));
     }
 
     /**
