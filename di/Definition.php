@@ -134,7 +134,7 @@ final class Definition
                 if (isset($this->parameters[$param->getName()])) {
                     $paramValue = $this->parameters[$param->getName()];
 
-                    if (is_callable($paramValue)) {
+                    if ($this->isCalable($paramValue)) {
                         $paramValue = call_user_func($paramValue);
                     }
 
@@ -173,7 +173,7 @@ final class Definition
 
             $property = $reflection->getProperty($name);
 
-            if (is_callable($value)) {
+            if ($this->isCalable($value)) {
                 $value = call_user_func($value);
             }
 
@@ -209,7 +209,7 @@ final class Definition
 
                 $param = $parameters[0];
 
-                if (is_callable($value)) {
+                if ($this->isCalable($value)) {
                     $value = call_user_func($value);
                 }
 
@@ -278,6 +278,15 @@ final class Definition
         }
 
         throw new Exception(sprintf('Definition for %s is not found', $className));
+    }
+
+    /**
+     * @param $paramValue
+     * @return bool
+     */
+    protected function isCalable($paramValue)
+    {
+        return !is_string($paramValue) && $this->isCalable($paramValue);
     }
 
 }
