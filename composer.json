@@ -4,7 +4,7 @@
     "keywords": ["di", "container"],
     "homepage": "https://github.com/dmitry-suffi/di-container",
     "type": "project",
-    "license": "BSD-3-Clause",
+    "license": "MIT",
     "support": {},
     "minimum-stability": "stable",
     "require": {
