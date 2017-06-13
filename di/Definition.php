@@ -286,7 +286,7 @@ final class Definition
      */
     protected function isCalable($paramValue)
     {
-        return !is_string($paramValue) && $this->isCalable($paramValue);
+        return !is_string($paramValue) && is_callable($paramValue);
     }
 
 }
