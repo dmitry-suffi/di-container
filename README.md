@@ -1,6 +1,8 @@
 Dependency injection container
 ==============================
 
+[![Build Status](https://api.travis-ci.org/dmitry-suffi/di-container.svg?branch=master)](https://travis-ci.org/dmitry-suffi/di-container)
+[![Coveralls](https://coveralls.io/repos/github/dmitry-suffi/di-container/badge.svg?branch=master)](https://coveralls.io/github/dmitry-suffi/di-container?branch=master)
 
 Dependency injection container
 [Martin Fowler's article](http://martinfowler.com/articles/injection.html)
