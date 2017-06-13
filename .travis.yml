@@ -14,6 +14,5 @@ script:
   - php vendor/bin/phpunit -c tests/phpunit.xml tests/
 
 after_success:
-  - ls -al build/logs
   - travis_retry php vendor/bin/coveralls
   - travis_retry php vendor/bin/coveralls -v
