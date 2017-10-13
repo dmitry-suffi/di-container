@@ -2,11 +2,13 @@
 
 namespace suffi\di;
 
+use Psr\Container\ContainerInterface;
+
 /**
  * Class Container
  * @package suffi\di
  */
-class Container
+class Container implements ContainerInterface
 {
     /**
      * @var array
@@ -129,9 +131,7 @@ class Container
     }
 
     /**
-     * Get by key
-     * @param string $key
-     * @return object|false
+     * @inheritdoc
      */
     public function get(string $key)
     {
@@ -156,9 +156,7 @@ class Container
     }
 
     /**
-     * Has instance by key
-     * @param string $key
-     * @return bool
+     * @inheritdoc
      */
     public function has(string $key)
     {
