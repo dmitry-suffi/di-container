@@ -156,9 +156,8 @@ class Container implements ContainerInterface
             return $this->get($this->aliases[$key]);
         }
 
-        if ($this->hasSingleton($key)) {
-            throw new NotFoundException("No entry was found for $key identifier");
-        }
+        throw new NotFoundException("No entry was found for $key identifier");
+
     }
 
     /**
