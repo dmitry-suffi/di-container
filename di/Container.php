@@ -2,11 +2,13 @@
 
 namespace suffi\di;
 
+use Psr\Container\ContainerInterface;
+
 /**
  * Class Container
  * @package suffi\di
  */
-class Container
+class Container implements ContainerInterface
 {
     /**
      * @var array
@@ -116,12 +118,12 @@ class Container
      * Set in container
      * @param string $key
      * @param $instance
-     * @throws Exception
+     * @throws ContainerException
      */
     public function set(string $key, $instance)
     {
         if (!is_object($instance)) {
-            throw new Exception('Value is not object');
+            throw new ContainerException('Value is not object');
         }
 
         /** is not singleton */
@@ -129,12 +131,14 @@ class Container
     }
 
     /**
-     * Get by key
-     * @param string $key
-     * @return object|false
+     * @inheritdoc
      */
-    public function get(string $key)
+    public function get($key)
     {
+        if (!is_string($key)) {
+            throw new ContainerException("Identifier is not string");
+        }
+
         if (isset($this->singletones[$key])) {
             return $this->singletones[$key];
         }
@@ -148,20 +152,23 @@ class Container
             return $this->container[$key];
         }
 
-        if (isset($this->aliases[$key])) {
-            return $this->get($this->aliases[$key]);
+        if ($this->hasAlias($key)) {
+            return $this->get($this->getAlias($key));
         }
 
-        return false;
+        throw new NotFoundException("No entry was found for $key identifier");
+
     }
 
     /**
-     * Has instance by key
-     * @param string $key
-     * @return bool
+     * @inheritdoc
      */
-    public function has(string $key)
+    public function has($key)
     {
+        if (!is_string($key)) {
+            throw new ContainerException("Identifier is not string");
+        }
+
         return $this->hasSingleton($key) || isset($this->container[$key]) || ($this->hasAlias($key) && $this->has($this->getAlias($key)));
     }
 
@@ -178,38 +185,19 @@ class Container
      * Set singleton in container
      * @param string $key
      * @param object $instance
-     * @throws Exception
+     * @throws ContainerException
      */
     public function setSingleton(string $key, $instance)
     {
         if ($this->hasSingleton($key)) {
-            throw new Exception($key . ' is singleton!');
+            throw new ContainerException($key . ' is singleton!');
         }
 
         if (!is_object($instance)) {
-            throw new Exception('Value is not object');
+            throw new ContainerException('Value is not object');
         }
 
         $this->singletones[$key] = $instance;
-    }
-
-    /**
-     * Get singleton by key
-     * @param string $key
-     * @return Object|false
-     */
-    protected function getSingleton(string $key)
-    {
-        return $this->singletones[$key] ?? false;
-    }
-
-    /**
-     * Remove singleton by $key
-     * @param string $key
-     */
-    protected function removeSingleton(string $key)
-    {
-        unset($this->singletones[$key]);
     }
 
     /**

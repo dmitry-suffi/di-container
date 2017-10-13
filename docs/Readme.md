@@ -7,6 +7,8 @@ Dependency injection container
 
 Dependency injection container — it is an object to instantiate the class and its dependent objects.
 
+This is in accordance with the recommendations of PSR-11.
+
 It supports the following kinds of dependency injection:
 
 * Constructor injection;

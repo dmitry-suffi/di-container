@@ -44,11 +44,11 @@ final class Definition
     public function __construct(Container $container, string $name, string $className)
     {
         if (!$name) {
-            throw new \Exception('Name is not found!');
+            throw new ContainerException('Name is not found!');
         }
 
         if (!$className) {
-            throw new \Exception('ClassName is not found!');
+            throw new ContainerException('ClassName is not found!');
         }
 
         $this->container = $container;
@@ -114,12 +114,13 @@ final class Definition
 
     /**
      * @return object
-     * @throws Exception
+     * @throws NotFoundException
+     * @throws ContainerException
      */
     public function make()
     {
         if (!class_exists($this->className)) {
-            throw new Exception(sprintf('Class %s not found', $this->className));
+            throw new NotFoundException(sprintf('Class %s not found', $this->className));
         }
 
         $reflection = new \ReflectionClass($this->className);
@@ -157,7 +158,7 @@ final class Definition
                         } else {
                             /** No is optional */
                             if (!$param->isOptional()) {
-                                throw new Exception(sprintf('Do not set the parameter %s to constructor', $param->getName()));
+                                throw new ContainerException(sprintf('Do not set the parameter %s to constructor', $param->getName()));
                             }
                         }
                     }
@@ -179,7 +180,7 @@ final class Definition
 
             if ($property) {
                 if (!$property->isPublic()) {
-                    throw new Exception(sprintf('%s Class %s property is not public', $this->className, $name));
+                    throw new ContainerException(sprintf('%s Class %s property is not public', $this->className, $name));
                 }
                 if ($property->isStatic()) {
                     $property->setValue($value);
@@ -196,15 +197,15 @@ final class Definition
             $method = $reflection->getMethod($settersName);
             if ($method) {
                 if ($method->isAbstract()) {
-                    throw new Exception(sprintf('%s:%s - abstract class method', $this->className, $settersName));
+                    throw new ContainerException(sprintf('%s:%s - abstract class method', $this->className, $settersName));
                 }
                 if (!$method->isPublic()) {
-                    throw new Exception(sprintf('%s:%s is not public method', $this->className, $settersName));
+                    throw new ContainerException(sprintf('%s:%s is not public method', $this->className, $settersName));
                 }
 
                 $parameters = $method->getParameters();
                 if (!isset($parameters[0])) {
-                    throw new Exception(sprintf('Method %s has no input parameters', $settersName));
+                    throw new ContainerException(sprintf('Method %s has no input parameters', $settersName));
                 }
 
                 $param = $parameters[0];
@@ -229,16 +230,16 @@ final class Definition
         /** Init */
         if ($this->initMethod) {
             if (!method_exists($instance, $this->initMethod)) {
-                throw new Exception(sprintf('Method %s is not found in class %s', $this->className, $this->initMethod));
+                throw new ContainerException(sprintf('Method %s is not found in class %s', $this->className, $this->initMethod));
             }
 
             $method = $reflection->getMethod($this->initMethod);
 
             if ($method->isAbstract()) {
-                throw new Exception(sprintf('%s:%s - abstract class method', $this->className, $this->initMethod));
+                throw new ContainerException(sprintf('%s:%s - abstract class method', $this->className, $this->initMethod));
             }
             if (!$method->isPublic()) {
-                throw new Exception(sprintf('%s:%s is not public method', $this->className, $this->initMethod));
+                throw new ContainerException(sprintf('%s:%s is not public method', $this->className, $this->initMethod));
             }
 
             if ($method->isStatic()) {
@@ -265,7 +266,7 @@ final class Definition
      * @todo пока только для конструктора и сеттеров, возможно сделать для публичных свойств ?
      * @param string $className
      * @return object
-     * @throws Exception
+     * @throws NotFoundException
      */
     protected function resolve(string $className)
     {
@@ -277,7 +278,7 @@ final class Definition
             return $this->container->getDefinition($className)->make();
         }
 
-        throw new Exception(sprintf('Definition for %s is not found', $className));
+        throw new NotFoundException(sprintf('Definition for %s is not found', $className));
     }
 
     /**
