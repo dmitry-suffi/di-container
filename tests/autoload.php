@@ -37,4 +37,4 @@ spl_autoload_register(function ($class) {
     }
 });
 
-require_once '../vendor/autoload.php';
+require_once '../autoload.php';
