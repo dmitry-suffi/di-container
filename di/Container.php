@@ -152,8 +152,8 @@ class Container implements ContainerInterface
             return $this->container[$key];
         }
 
-        if (isset($this->aliases[$key])) {
-            return $this->get($this->aliases[$key]);
+        if ($this->hasAlias($key)) {
+            return $this->get($this->getAlias($key));
         }
 
         throw new NotFoundException("No entry was found for $key identifier");
@@ -198,25 +198,6 @@ class Container implements ContainerInterface
         }
 
         $this->singletones[$key] = $instance;
-    }
-
-    /**
-     * Get singleton by key
-     * @param string $key
-     * @return Object|false
-     */
-    protected function getSingleton(string $key)
-    {
-        return $this->singletones[$key] ?? false;
-    }
-
-    /**
-     * Remove singleton by $key
-     * @param string $key
-     */
-    protected function removeSingleton(string $key)
-    {
-        unset($this->singletones[$key]);
     }
 
     /**

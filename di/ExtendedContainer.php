@@ -35,11 +35,19 @@ class ExtendedContainer extends Container
      */
     public function get($key)
     {
-        $obj = parent::get($key);
-        if (!$obj && !is_null($this->parentsContainer)) {
-            $obj = $this->parentsContainer->get($key);
+        try{
+            $obj = parent::get($key);
+
+            return $obj;
         }
-        return $obj;
+        catch (NotFoundException $e) {
+            if (!is_null($this->parentsContainer)) {
+                return $this->parentsContainer->get($key);
+            } else {
+                throw $e;
+            }
+        }
+
     }
 
     /**
@@ -78,15 +86,6 @@ class ExtendedContainer extends Container
             $has = $this->parentsContainer->hasDefinition($key);
         }
         return $has;
-    }
-
-    protected function getSingleton(string $key)
-    {
-        $obj = parent::getSingleton($key);
-        if (!$obj && !is_null($this->parentsContainer)) {
-            $obj = $this->parentsContainer->getSingleton($key);
-        }
-        return $obj;
     }
 
     public function hasSingleton(string $key)

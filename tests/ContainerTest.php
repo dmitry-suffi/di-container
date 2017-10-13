@@ -190,6 +190,16 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    public function testNotFoundExtended()
+    {
+        $container = new Container();
+
+        $extContainer = new \suffi\di\ExtendedContainer();
+        $extContainer->setParentsContainer($container);
+        $this->initNotFoundException();
+        $extContainer->get('bar');
+    }
+
     public function testExtended()
     {
         $container = new Container();
@@ -205,7 +215,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $thy->setBar('bar');
 
         $container->set('foo', $foo);
-        $container->set('bar', $bar);
+        $container->setSingleton('bar', $bar);
         $container->set('thy', $thy);
 
         $container->setDefinition('common', 'Common')
@@ -219,6 +229,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($extContainer->has('foo'));
         $this->assertFalse($extContainer->has('bar'));
+        $this->assertFalse($extContainer->hasSingleton('bar'));
         $this->assertFalse($extContainer->has('thy'));
         $this->assertFalse($extContainer->has('common'));
         $this->assertFalse($extContainer->hasDefinition('common'));
@@ -227,18 +238,27 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($extContainer->has('foo'));
         $this->assertTrue($extContainer->has('bar'));
+        $this->assertTrue($extContainer->hasSingleton('bar'));
         $this->assertTrue($extContainer->has('thy'));
         $this->assertFalse($extContainer->has('common'));
         $this->assertTrue($extContainer->hasDefinition('common'));
+
+        $this->assertEquals($extContainer->getParentsContainer(), $container);
+
+        $newFoo = $extContainer->get('foo');
+        $this->assertInstanceOf('Foo', $newFoo);
+        $this->assertEquals($foo, $newFoo);
+
+        $def = $extContainer->getDefinition('common');
+        $this->assertInstanceOf('suffi\di\Definition', $def);
+        $this->assertEquals($container->getDefinition('common'), $def);
+
+        $this->assertEquals($extContainer->get('bar'), $bar);
     }
 
     public function testAlias()
     {
-
         $container = new Container();
-
-        $foo = new Foo();
-        $foo->foo = 'foo';
 
         $container->setDefinition('foo', 'Foo');
 
@@ -247,12 +267,24 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $container->setAlias('bar', 'foo');
         $container->setAlias('thy', 'bar');
 
+        $this->assertEquals($container->getAlias('thy'), 'bar');
+        $this->assertTrue($container->hasAlias('thy'));
+
         $this->assertTrue($container->hasDefinition('foo'));
         $this->assertTrue($container->hasDefinition('bar'));
         $this->assertTrue($container->hasDefinition('thy'));
 
         $this->assertEquals($container->getDefinition('foo'), $container->getDefinition('bar'));
         $this->assertEquals($container->getDefinition('foo'), $container->getDefinition('thy'));
+
+        $this->assertEquals($container->get('bar'), $container->get('foo'));
+        $this->assertEquals($container->get('thy'), $container->get('foo'));
+
+        $container->removeAlias('thy');
+        $this->assertFalse($container->getAlias('thy'));
+        $this->assertFalse($container->hasAlias('thy'));
+        $this->assertFalse($container->hasDefinition('thy'));
+
     }
 
 }

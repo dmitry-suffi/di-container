@@ -44,11 +44,11 @@ final class Definition
     public function __construct(Container $container, string $name, string $className)
     {
         if (!$name) {
-            throw new \Exception('Name is not found!');
+            throw new ContainerException('Name is not found!');
         }
 
         if (!$className) {
-            throw new \Exception('ClassName is not found!');
+            throw new ContainerException('ClassName is not found!');
         }
 
         $this->container = $container;
@@ -115,6 +115,7 @@ final class Definition
     /**
      * @return object
      * @throws NotFoundException
+     * @throws ContainerException
      */
     public function make()
     {
