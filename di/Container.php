@@ -133,8 +133,12 @@ class Container implements ContainerInterface
     /**
      * @inheritdoc
      */
-    public function get(string $key)
+    public function get($key)
     {
+        if (!is_string($key)) {
+            throw new ContainerException("Identifier is not string");
+        }
+
         if (isset($this->singletones[$key])) {
             return $this->singletones[$key];
         }
@@ -152,14 +156,20 @@ class Container implements ContainerInterface
             return $this->get($this->aliases[$key]);
         }
 
-        return false;
+        if ($this->hasSingleton($key)) {
+            throw new NotFoundException("No entry was found for $key identifier");
+        }
     }
 
     /**
      * @inheritdoc
      */
-    public function has(string $key)
+    public function has($key)
     {
+        if (!is_string($key)) {
+            throw new ContainerException("Identifier is not string");
+        }
+
         return $this->hasSingleton($key) || isset($this->container[$key]) || ($this->hasAlias($key) && $this->has($this->getAlias($key)));
     }
 

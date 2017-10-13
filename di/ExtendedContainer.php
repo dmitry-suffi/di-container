@@ -33,7 +33,7 @@ class ExtendedContainer extends Container
     /**
      * @inheritdoc
      */
-    public function get(string $key)
+    public function get($key)
     {
         $obj = parent::get($key);
         if (!$obj && !is_null($this->parentsContainer)) {
@@ -45,7 +45,7 @@ class ExtendedContainer extends Container
     /**
      * @inheritdoc
      */
-    public function has(string $key)
+    public function has($key)
     {
         $has = parent::has($key);
 

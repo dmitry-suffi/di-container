@@ -11,6 +11,11 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->expectException(\suffi\di\ContainerException::class);
     }
 
+    protected function initNotFoundException()
+    {
+        $this->expectException(\suffi\di\NotFoundException::class);
+    }
+
     public function testDefinition()
     {
         $container = new Container();
@@ -63,13 +68,23 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($newFoo1, $foo1);
         $this->assertNotEquals($newFoo1, $foo);
 
-        $this->assertFalse($container->get('bar'));
-
         $this->assertTrue($container->has('foo'));
         $container->remove('foo');
 
         $this->assertFalse($container->has('foo'));
         $this->assertFalse($container->has('bar'));
+
+    }
+
+    public function testNotFoundContainer()
+    {
+        $this->initNotFoundException();
+
+        $container = new Container();
+
+        $container->remove('foo');
+
+        $container->get('foo');
 
     }
 
