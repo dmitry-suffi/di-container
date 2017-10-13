@@ -78,12 +78,12 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testNotFoundContainer()
     {
-        $this->initNotFoundException();
 
         $container = new Container();
 
         $container->remove('foo');
 
+        $this->initNotFoundException();
         $container->get('foo');
 
     }
