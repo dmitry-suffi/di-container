@@ -8,7 +8,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
     protected function initException()
     {
-        $this->expectException(\suffi\di\Exception::class);
+        $this->expectException(\suffi\di\ContainerException::class);
     }
 
     public function testDefinition()

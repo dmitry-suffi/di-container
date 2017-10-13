@@ -116,12 +116,12 @@ class Container
      * Set in container
      * @param string $key
      * @param $instance
-     * @throws Exception
+     * @throws ContainerException
      */
     public function set(string $key, $instance)
     {
         if (!is_object($instance)) {
-            throw new Exception('Value is not object');
+            throw new ContainerException('Value is not object');
         }
 
         /** is not singleton */
@@ -178,16 +178,16 @@ class Container
      * Set singleton in container
      * @param string $key
      * @param object $instance
-     * @throws Exception
+     * @throws ContainerException
      */
     public function setSingleton(string $key, $instance)
     {
         if ($this->hasSingleton($key)) {
-            throw new Exception($key . ' is singleton!');
+            throw new ContainerException($key . ' is singleton!');
         }
 
         if (!is_object($instance)) {
-            throw new Exception('Value is not object');
+            throw new ContainerException('Value is not object');
         }
 
         $this->singletones[$key] = $instance;
