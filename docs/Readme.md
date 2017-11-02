@@ -47,12 +47,12 @@ composer require dmitry-suffi/di
 Documentation
 -------------
 the documentation can be found here:
-* [English](docs/en)
-* [Russian](docs/ru)
+* [English](en)
+* [Russian](ru)
 
 Tests
 --------
-You can also browse the [functional tests](test/)
+You can also browse the [functional tests](../test/)
 
 License
 -------
