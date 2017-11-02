@@ -54,7 +54,7 @@ the documentation can be found here:
 
 Tests
 --------
-You can also browse the [functional tests](test/)
+You can also browse the [functional tests](tests/)
 
 License
 -------
