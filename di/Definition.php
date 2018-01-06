@@ -270,15 +270,13 @@ final class Definition
      */
     protected function resolve(string $className)
     {
-        if ($this->container->has($className)) {
-            return $this->container->get($className);
+        $object = $this->container->get($className);
+
+        if (!$object) {
+            throw new Exception(sprintf('Definition for %s is not found', $className));
         }
 
-        if ($this->container->hasDefinition($className)) {
-            return $this->container->getDefinition($className)->make();
-        }
-
-        throw new NotFoundException(sprintf('Definition for %s is not found', $className));
+        return $object;
     }
 
     /**

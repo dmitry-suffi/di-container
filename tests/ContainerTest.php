@@ -287,4 +287,27 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    public function testGetRetry()
+    {
+        $container = new Container();
+
+        $container->setDefinition('foo', 'Foo');
+
+        $container->setDefinition('common', 'Common')
+            ->parameter('foo', 'foo');
+
+        $this->assertFalse($container->has('common'));
+        $this->assertFalse($container->has('foo'));
+
+        $common = $container->get('common');
+
+        $this->assertTrue($container->has('foo'));
+
+        $foo = $container->get('foo');
+        $foo->bar = 'foo';
+
+        $this->assertEquals($common->getFoo()->bar, $foo->bar);
+
+    }
+
 }
