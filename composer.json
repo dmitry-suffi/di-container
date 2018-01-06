@@ -12,7 +12,7 @@
             "name": "Dmitry Suffi",
             "email": "dmitry.suffering@gmail.com"
         }
-    ]
+    ],
     "require": {
         "php": ">=7.0.0",
         "psr/container": "*"
