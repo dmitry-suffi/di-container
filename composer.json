@@ -23,6 +23,6 @@
         "satooshi/php-coveralls": "*"
     },
     "autoload": {
-        "psr-4": {"suffi\\di\\": "di\\"}
+        "psr-4": {"suffi\\di\\": "src\\"}
     }
 }
