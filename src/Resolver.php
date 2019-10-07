@@ -375,7 +375,7 @@ class Resolver
         if (method_exists($reflectionType, 'getName')) {
             $type = $reflectionType->getName();
         } else {
-            $type = $reflectionType;
+            $type = (string)$reflectionType;
         }
         return $type;
     }
