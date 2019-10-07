@@ -1,7 +1,9 @@
 <?php
 
+namespace suffi\di\Tests\Mocks;
 
-class Common{
+class Common
+{
 
     protected $foo = '';
     public $bar = '';
@@ -34,4 +36,15 @@ class Common{
         $this->thy = 'thy init';
     }
 
+    public static function SCommon(Foo $foo = null):Common
+    {
+        return new Common($foo);
+    }
+
+    public static function SBCommon(Foo $foo = null):Common
+    {
+        $common = new Common($foo);
+        $common->bar = 'factory bar';
+        return $common;
+    }
 }

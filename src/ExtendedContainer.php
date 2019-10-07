@@ -31,27 +31,24 @@ class ExtendedContainer extends Container
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function get($key)
     {
-        try{
+        try {
             $obj = parent::get($key);
-
             return $obj;
-        }
-        catch (NotFoundException $e) {
+        } catch (NotFoundException $e) {
             if (!is_null($this->parentsContainer)) {
                 return $this->parentsContainer->get($key);
             } else {
                 throw $e;
             }
         }
-
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function has($key)
     {
@@ -64,7 +61,7 @@ class ExtendedContainer extends Container
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDefinition(string $key)
     {
@@ -76,7 +73,7 @@ class ExtendedContainer extends Container
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function hasDefinition(string $key)
     {
@@ -88,15 +85,40 @@ class ExtendedContainer extends Container
         return $has;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function hasSingleton(string $key)
     {
         $has = parent::hasSingleton($key);
-
         if (!$has && !is_null($this->parentsContainer)) {
             $has = $this->parentsContainer->hasSingleton($key);
         }
         return $has;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameter(string $name)
+    {
+        $parameter = parent::getParameter($name);
 
+        if (!$parameter && !parent::hasParameter($name) && !is_null($this->parentsContainer)) {
+            $parameter = $this->parentsContainer->getParameter($name);
+        }
+        return $parameter;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasParameter(string $name)
+    {
+        $has = parent::hasParameter($name);
+        if (!$has && !is_null($this->parentsContainer)) {
+            $has = $this->parentsContainer->hasParameter($name);
+        }
+        return $has;
+    }
 }

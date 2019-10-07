@@ -1,372 +1,182 @@
 <?php
 
+namespace suffi\di\Tests;
+
 use \suffi\di\Container;
 use \suffi\di\Definition;
+use \suffi\di\Tests\Mocks;
 
 /**
  * Class DefinitionTest
  */
-class DefinitionTest extends \PHPUnit_Framework_TestCase
+class DefinitionTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @return Container
+     */
+    protected function getContainer(): Container
+    {
+        $container = new Container();
+        return $container;
+    }
 
     protected function initException()
     {
         $this->expectException(\suffi\di\ContainerException::class);
     }
 
-    public function testProperties()
+    public function testNoNameException()
     {
-        $container = new Container();
+        $container = $this->getContainer();
+        $this->initException();
+        new Definition($container, '', Mocks\Foo::class);
+    }
 
-        $def = new Definition($container, 'foo', 'Foo');
+    public function testNoClassNameException()
+    {
+        $container = $this->getContainer();
+        $this->initException();
+        new Definition($container, 'foo', '');
+    }
+
+    public function testDefinition()
+    {
+        $container = $this->getContainer();
+
+        $def = new Definition($container, 'foo', Mocks\Foo::class);
+
+        $this->assertEquals($def->getName(), 'foo');
+        $this->assertEquals($def->getClassName(), Mocks\Foo::class);
+        $def->setClassName(Mocks\Bar::class);
+        $this->assertEquals($def->getClassName(), Mocks\Bar::class);
+
+        $container->setAlias('foo', 'bar');
+
+        $this->assertEquals('bar', $def->getContainer()->getAlias('foo'));
+    }
+
+    public function testGetProperties()
+    {
+        $container = $this->getContainer();
+
+        $def = new Definition($container, 'foo', Mocks\Foo::class);
+
+        $this->assertEquals($def->getProperty('foo'), null);
+        $this->assertEquals($def->getProperties(), []);
 
         $def->property('foo', 'foo')
             ->property('bar', 'bar');
 
-        $foo = $def->make();
-
-        $this->assertInstanceOf('Foo', $foo);
-
-        $this->assertEquals($foo->foo, 'foo');
-        $this->assertEquals($foo->bar, 'bar');
-
-        $def->property('foo', 'foo1')
-            ->property('bar', 'bar1');
-
-        $foo1 = $def->make();
-
-        $this->assertInstanceOf('Foo', $foo);
-        $this->assertInstanceOf('Foo', $foo1);
-
-        $this->assertEquals($foo->foo, 'foo');
-        $this->assertEquals($foo->bar, 'bar');
-
-        $this->assertEquals($foo1->foo, 'foo1');
-        $this->assertEquals($foo1->bar, 'bar1');
-
-        $def2 = new Definition($container, 'foo', 'Foo');
-        $def2->property('foo', 'foo2');
-
-        $foo2 = $def2->make();
-
-        $this->assertInstanceOf('Foo', $foo);
-        $this->assertInstanceOf('Foo', $foo1);
-        $this->assertInstanceOf('Foo', $foo2);
-
-        $this->assertEquals($foo->foo, 'foo');
-        $this->assertEquals($foo->bar, 'bar');
-
-        $this->assertEquals($foo1->foo, 'foo1');
-        $this->assertEquals($foo1->bar, 'bar1');
-
-        $this->assertEquals($foo2->foo, 'foo2');
-        $this->assertEquals($foo2->bar, '');
-
-        /** Static */
-        $def->property('s_foo', 'foo');
-
-        $this->assertNotEquals(Foo::$s_foo, 'foo');
-        $foo3 = $def->make();
-
-        $this->assertInstanceOf('Foo', $foo3);
-
-        $this->assertEquals(Foo::$s_foo, 'foo');
-        
-        /** Callable */
-
-        $def = new Definition($container, 'foo', 'Foo');
-
-        $def->property('foo', function() {
-            return 'foo';
-        })
-            ->property('bar', function() {
-                return 'foo';
-            });
-
-        $foo = $def->make();
-        $this->assertEquals($foo->foo, 'foo');
-        $this->assertEquals($foo->bar, 'foo');
-
+        $this->assertEquals($def->getProperties(), ['foo' => 'foo', 'bar' => 'bar']);
+        $this->assertEquals($def->getProperty('foo'), 'foo');
+        $this->assertEquals($def->getProperty('bar'), 'bar');
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function testPrivateProperty()
+    public function testGetParameters()
     {
+        $container = $this->getContainer();
 
-        $container = new Container();
+        $def = new Definition($container, 'bar', Mocks\Bar::class);
 
-        $def = new Definition($container, 'foo', 'Foo');
-
-        $def->property('_foo', 'foo');
-
-        $this->initException();
-        $def->make();
-    }
-
-    public function testConstructor()
-    {
-        $container = new Container();
-
-        $def = new Definition($container, 'bar', 'Bar');
+        $this->assertEquals($def->getParameter('foo'), null);
+        $this->assertEquals($def->getParameters(), []);
 
         $def->parameter('foo', 'foo')
             ->parameter('bar', 'bar');
 
-        /** @var Bar $bar */
-        $bar = $def->make();
-
-        $this->assertInstanceOf('Bar', $bar);
-        $this->assertEquals($bar->getFoo(), 'foo');
-        $this->assertEquals($bar->getBar(), 'bar');
-        $this->assertEquals($bar->getThy(), 'thy'); //default value
-
-        $def->parameter('foo', 'foo1')
-            ->parameter('bar', 'bar1')
-            ->parameter('thy', 'thy1');
-
-        /** @var Bar $bar */
-        $bar1 = $def->make();
-
-        $this->assertInstanceOf('Bar', $bar1);
-        $this->assertEquals($bar1->getFoo(), 'foo1');
-        $this->assertEquals($bar1->getBar(), 'bar1');
-        $this->assertEquals($bar1->getThy(), 'thy1');
-
-        /** Callable */
-        $def->parameter('foo', function() {
-            return 'foo1bar1';
-        })
-            ->parameter('bar', 'bar1')
-            ->parameter('thy', 'thy1');
-
-        /** @var Bar $bar */
-        $bar1 = $def->make();
-
-        $this->assertInstanceOf('Bar', $bar1);
-        $this->assertEquals($bar1->getFoo(), 'foo1bar1');
-        $this->assertEquals($bar1->getBar(), 'bar1');
-        $this->assertEquals($bar1->getThy(), 'thy1');
+        $this->assertEquals($def->getParameters(), ['foo' => 'foo', 'bar' => 'bar']);
+        $this->assertEquals($def->getParameter('foo'), 'foo');
+        $this->assertEquals($def->getParameter('bar'), 'bar');
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function testNoSetParameters()
+    public function testGetSetters()
     {
-        $container = new Container();
+        $container = $this->getContainer();
 
-        $def = new Definition($container, 'bar', 'Bar');
+        $def = new Definition($container, 'bar', Mocks\Bar::class);
 
-        $def->parameter('foo', 'foo');
-
-        $this->initException();
-        $bar = $def->make();
-    }
-
-    public function testSetters()
-    {
-        $container = new Container();
-
-        $def = new Definition($container, 'thy', 'Thy');
-
-        /** @var Thy $thy */
-        $thy = $def->make();
-
-        $this->assertInstanceOf('Thy', $thy);
-        $this->assertEquals($thy->getFoo(), '');
-        $this->assertEquals($thy->getBar(), '');
-        $this->assertEquals(Thy::getSFoo(), '');
+        $this->assertEquals($def->getSetter('foo'), null);
+        $this->assertEquals($def->getSetters(), []);
 
         $def->setter('foo', 'foo')
             ->setter('bar', 'bar');
 
-        /** @var Thy $thy1 */
-        $thy1 = $def->make();
-
-        $this->assertInstanceOf('Thy', $thy1);
-        $this->assertEquals($thy1->getFoo(), 'foo');
-        $this->assertEquals($thy1->getBar(), 'bar');
-        $this->assertEquals(Thy::getSFoo(), '');
-
-        $def->setter('s_foo', 's_foo');
-
-        $def->make();
-        $this->assertEquals(Thy::getSFoo(), 's_foo');
-        
-        /** @var Thy $thy1 */
-        $def->setter('foo', 'foo')
-            ->setter('bar', function() {
-                return 'foo1bar1';
-            });
-        
-        $thy2 = $def->make();
-
-        $this->assertInstanceOf('Thy', $thy2);
-        $this->assertEquals($thy2->getFoo(), 'foo');
-        $this->assertEquals($thy2->getBar(), 'foo1bar1');
+        $this->assertEquals($def->getSetters(), ['foo' => 'foo', 'bar' => 'bar']);
+        $this->assertEquals($def->getSetter('foo'), 'foo');
+        $this->assertEquals($def->getSetter('bar'), 'bar');
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function testPrivateSetter()
+    public function testGetInit()
     {
+        $container = $this->getContainer();
 
-        $container = new Container();
+        $def = new Definition($container, 'bar', Mocks\Bar::class);
 
-        $def = new Definition($container, 'thy', 'Thy');
+        $this->assertEquals($def->getInit(), '');
 
-        $def->setter('foo-bar', 'foo');
+        $def->init('initMethod');
 
-        $this->initException();
-        $def->make();
+        $this->assertEquals($def->getInit(), 'initMethod');
     }
 
-    public function testInit()
+    public function testGetFactory()
+    {
+        $container = $this->getContainer();
+
+        $def = new Definition($container, 'bar', Mocks\Bar::class);
+
+        $this->assertEquals($def->getFactory(), '');
+
+        $def->factory('FactoryMethod');
+
+        $this->assertEquals($def->getFactory(), 'FactoryMethod');
+    }
+
+    public function testGetSingleton()
     {
         $container = new Container();
 
-        $def = new Definition($container, 'init', 'Init');
+        $container->addDefinition('foo', Mocks\Foo::class)
+            ->setSingleton(true);
 
-        /** @var Init $init */
-        $init = $def->make();
+        $container->addDefinition('common', Mocks\Common::class)
+            ->parameter('foo', 'foo');
 
-        $this->assertInstanceOf('Init', $init);
-        $this->assertEquals($init->foo, '');
-        $this->assertEquals($init->bar, '');
-        $this->assertEquals($init->thy, '');
+        $this->assertFalse($container->has('common'));
+        $this->assertFalse($container->has('foo'));
 
-        $def->init('initFoo');
+        $common = $container->get('common');
 
-        /** @var Init $init */
-        $init = $def->make();
+        $this->assertTrue($container->has('foo'));
 
-        $this->assertInstanceOf('Init', $init);
-        $this->assertEquals($init->foo, 'foo');
-        $this->assertEquals($init->bar, '');
-        $this->assertEquals($init->thy, '');
+        $foo = $container->get('foo');
+        $foo->bar = 'foo';
 
-        $def->init('initBar');
-
-        /** @var Init $init */
-        $init = $def->make();
-
-        $this->assertInstanceOf('Init', $init);
-        $this->assertEquals($init->foo, '');
-        $this->assertEquals($init->bar, 'bar');
-        $this->assertEquals($init->thy, '');
-
-        $def->init('initThy');
-
-        /** @var Init $init */
-        $init = $def->make();
-
-        $this->assertInstanceOf('Init', $init);
-        $this->assertEquals($init->foo, '');
-        $this->assertEquals($init->bar, '');
-        $this->assertEquals($init->thy, 'thy');
-
-        $def->init('initAll');
-
-        /** @var Init $init */
-        $init = $def->make();
-
-        $this->assertInstanceOf('Init', $init);
-        $this->assertEquals($init->foo, 'foo');
-        $this->assertEquals($init->bar, 'bar');
-        $this->assertEquals($init->thy, 'thy');
+        $this->assertEquals($common->getFoo()->bar, $foo->bar);
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function testNoExistInit()
-    {
-
-        $container = new Container();
-
-        $def = new Definition($container, 'init', 'Init');
-
-        $def->init('initNoExist');
-
-        $this->initException();
-        $def->make();
-    }
-
-    public function testCommon()
+    public function testGetNotSingleton()
     {
         $container = new Container();
 
-        $def = new Definition($container, 'common', 'Common');
+        $container->addDefinition('foo', Mocks\Foo::class)
+            ->setSingleton(false);
 
-        $foo = new Foo();
-        $thy = new Thy();
+        $container->addDefinition('common', Mocks\Common::class)
+            ->parameter('foo', 'foo');
 
-        /** @var Common $common */
-        $common = $def->make();
+        $this->assertFalse($container->has('common'));
+        $this->assertFalse($container->has('foo'));
 
-        $this->assertInstanceOf('Common', $common);
-        $this->assertEquals($common->getFoo(), '');
-        $this->assertEquals($common->bar, '');
-        $this->assertEquals($common->getThy(), '');
+        $common = $container->get('common');
 
-        $def->parameter('foo', $foo);
+        $this->assertFalse($container->has('foo'));
+        $this->assertEquals($common->getFoo()->bar, '');
+        $foo = $container->get('foo');
+        $this->assertFalse($container->has('foo'));
+        $this->assertEquals($common->getFoo()->bar, '');
+        $foo->bar = 'foo';
 
-        $common = $def->make();
-
-        $this->assertInstanceOf('Common', $common);
-        $this->assertEquals($common->getFoo(), $foo);
-        $this->assertEquals($common->bar, '');
-        $this->assertEquals($common->getThy(), '');
-
-        $def->property('bar', 'bar');
-
-        $common = $def->make();
-
-        $this->assertInstanceOf('Common', $common);
-        $this->assertEquals($common->getFoo(), $foo);
-        $this->assertEquals($common->bar, 'bar');
-        $this->assertEquals($common->getThy(), '');
-
-        $def->setter('thy', $thy);
-
-        $common = $def->make();
-
-        $this->assertInstanceOf('Common', $common);
-        $this->assertEquals($common->getFoo(), $foo);
-        $this->assertEquals($common->bar, 'bar');
-        $this->assertEquals($common->getThy(), $thy);
-
-        $def->init('initAll');
-
-        $common = $def->make();
-
-        $this->assertInstanceOf('Common', $common);
-        $this->assertEquals($common->getFoo(), 'foo init');
-        $this->assertEquals($common->bar, 'bar init');
-        $this->assertEquals($common->getThy(), 'thy init');
-
-        /** All */
-        $def1 = new Definition($container, 'common', 'Common');
-        $common = $def1->make();
-
-        $this->assertInstanceOf('Common', $common);
-        $this->assertEquals($common->getFoo(), '');
-        $this->assertEquals($common->bar, '');
-        $this->assertEquals($common->getThy(), '');
-
-        $def1->parameter('foo', $foo)
-            ->property('bar', 'bar')
-            ->setter('thy', $thy);
-
-        $common = $def1->make();
-
-        $this->assertInstanceOf('Common', $common);
-        $this->assertEquals($common->getFoo(), $foo);
-        $this->assertEquals($common->bar, 'bar');
-        $this->assertEquals($common->getThy(), $thy);
+        $this->assertEquals($common->getFoo()->bar, '');
     }
-
 }

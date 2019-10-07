@@ -17,6 +17,8 @@ Class-definition. It contains the definition of the class dependencies and the m
 
 * _init(string $methodName)_ - Adding initialization method. The method will be called after object creation and installation of all the properties and setters.
 
+* _factory(string $factory)_ - Adding a factory item to create an object. The object must be static.
+
 * _make()_ - It creates an object and dependency resolution.
 
 ### Notes.
@@ -24,3 +26,18 @@ Class-definition. It contains the definition of the class dependencies and the m
 * setters and initialization methods must be public and abstract.
 
 * If the function is of type object, you can pass the key on which the object will be searched in the container. Only dependency through a constructor or setter. It does not work for the properties, as in php can not explicitly specify the type of the property.
+
+### Example
+```php
+
+$container = $this->getContainer();
+
+$def = new Definition($container, 'foo', Foo::class);
+
+$foo = $def->factory('createFromFoo')
+           ->parameter('foo', 'foo')
+           ->property('bar', 'bar')
+           ->setter('thy', 'thy')
+           ->init('initMethod')
+           ->make();
+```
