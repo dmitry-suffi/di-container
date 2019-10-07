@@ -1,6 +1,9 @@
 <?php
 
-class Thy{
+namespace suffi\di\Tests\Mocks;
+
+class Thy
+{
 
     protected $foo = '';
     protected $bar = '';
@@ -26,7 +29,7 @@ class Thy{
     {
         $this->bar = $bar;
     }
-    
+
     public static function getSFoo()
     {
         return self::$s_foo;
@@ -41,5 +44,4 @@ class Thy{
     {
         $this->bar = $bar;
     }
-
 }

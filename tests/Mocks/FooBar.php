@@ -1,6 +1,9 @@
 <?php
 
-class FooBar implements Barable{
+namespace suffi\di\Tests\Mocks;
+
+class FooBar implements Barable
+{
 
     public $foo = '';
 
@@ -8,6 +11,4 @@ class FooBar implements Barable{
     {
         $this->foo = $foo;
     }
-
-
 }

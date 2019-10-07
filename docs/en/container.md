@@ -13,19 +13,25 @@ Class for storing objects and their dependencies.
 
 * _get(string $key)_ - Getting on the key object.
 
+* _make(string $name, array $makeParameters = [])_ - Creating an object by definition, with parameters for the constructor. Does not add the created object to the container.
+
+* _invokeMethod($instance, string $methodName, array $makeParameters = [])_ - Calls a method of an object with substitution of parameters from the container.
+
 * _has(string $key)_ - Indicates whether a container in the finished object with the specified key.
 
 * _hasSingleton(string $key)_ - It indicates whether an object in a container ready for a single specified key.
 
 * _remove(string $key)_ - It removes from the container the object by key. Do not remove the singletons.
 
-* _setDefinition(string $name, string $className): Definition_ - $name specifies the rules for the class $className.
+* _addDefinition(string $name, string $className): Definition_ - $name specifies the definition for the class $className.
 
-* _getDefinition(string $name)_ - We get the right name.
+* _setDefinition(string $name, Definition $definition)_ - Set the definition of $definition.
 
-* _removeDefinition(string $name)_ - Removing rules.
+* _getDefinition(string $name)_ - Getting definition by name.
 
-* _hasDefinition(string $name)_ - Indicates whether a container in the rule with the specified name.
+* _removeDefinition(string $name)_ - Removing definition.
+
+* _hasDefinition(string $name)_ - Indicates whether a container in the definition with the specified name.
 
 * _setAlias(string $name, string $alias)_ - Setting alias.
 
@@ -34,3 +40,11 @@ Class for storing objects and their dependencies.
 * _hasAlias(string $name)_ - Check for the existence of an alias.
 
 * _removeAlias(string $name)_ - Deleting an alias.
+
+* _setParameter(string $name, string $parameter)_ - Adding a parameter.
+
+* _getParameter(string $name)_ - Getting parameter by name.
+
+* _removeParameter(string $name)_ - Removing parameter.
+
+* _hasParameter(string $name)_ - Checks if the specified parameter exists.
