@@ -129,7 +129,8 @@ class Resolver
             if (!$factory->isPublic()) {
                 throw new ContainerException(sprintf('Method %s not public', $factory));
             }
-            if (!in_array((string)$factory->getReturnType(), [$definition->getClassName(), 'static', 'self'])) {
+            $type = $this->getReflectionTypeName($factory->getReturnType());
+            if (!in_array($type, [$definition->getClassName(), 'static', 'self'])) {
                 throw new ContainerException(
                     sprintf('Method %s not return type of %s', $factory, $definition->getClassName())
                 );
@@ -193,7 +194,7 @@ class Resolver
                 if ($method->isPublic() && !$method->isStatic() && !$method->isAbstract()) {
                     $parameters = $method->getParameters();
                     if (isset($parameters[0])) {
-                        $type = (string)$parameters[0]->getType();
+                        $type = $this->getReflectionTypeName($parameters[0]->getType());
                         if (get_class($this->container) == $type || isset(class_parents($this->container)[$type])) {
                             $instance->setContainer($this->container);
                         }
@@ -362,5 +363,20 @@ class Resolver
                 sprintf('%s:%s is not public method', $className, $methodName)
             );
         }
+    }
+
+    /**
+     * @param $reflectionType
+     * @param $parameters
+     * @return string
+     */
+    private function getReflectionTypeName($reflectionType): string
+    {
+        if (method_exists($reflectionType, 'getName')) {
+            $type = $reflectionType->getName();
+        } else {
+            $type = $reflectionType;
+        }
+        return $type;
     }
 }
